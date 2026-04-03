@@ -20,8 +20,8 @@
   --clr-muted:     #6b7685;       /* Secondary / muted text */
   --clr-dim:       #3d4755;       /* Placeholder / dim text */
 
-  --clr-accent:    #4af2a1;       /* Primary accent (green-teal) */
-  --clr-accent2:   #2dd4bf;       /* Secondary accent */
+  --clr-accent:    #003cff;       /* Primary accent (green-teal) */
+  --clr-accent2:   #62a2f7;       /* Secondary accent */
   --clr-number:    #1e2a22;       /* Background behind section numbers */
 
   /* Typography */
