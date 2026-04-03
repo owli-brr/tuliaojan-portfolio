@@ -51,7 +51,7 @@
 
   /* Animation */
   --ease-out:      cubic-bezier(0.16, 1, 0.3, 1);
-  --duration:      5s;
+  --duration:      0.6s;
 }
 
 /* ── RESET & BASE ───────────────────────────── */
@@ -104,19 +104,31 @@ ul {
 }
 
 /* ── FADE-IN ANIMATION ──────────────────────── */
-/* Elements with class .fade-in start invisible
-   and animate in when they enter the viewport */
+/* Sections start at opacity 0 and slide up into view.
+   JS adds .visible when they enter the viewport.
+   Each section also gets a stagger-delay via nth-child. */
+
 .fade-in {
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity var(--duration) var(--ease-out),
-              transform var(--duration) var(--ease-out);
+  transform: translateY(36px);
+  transition: opacity 0.75s var(--ease-out),
+              transform 0.75s var(--ease-out);
+  will-change: opacity, transform;
 }
 
 .fade-in.visible {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* Stagger each section slightly later than the previous */
+.section:nth-child(1)  { transition-delay: 0ms; }
+.section:nth-child(2)  { transition-delay: 60ms; }
+.section:nth-child(3)  { transition-delay: 120ms; }
+.section:nth-child(4)  { transition-delay: 180ms; }
+.section:nth-child(5)  { transition-delay: 240ms; }
+.section:nth-child(6)  { transition-delay: 300ms; }
+.section:nth-child(7)  { transition-delay: 360ms; }
 
 /* ── HERO / HEADER ──────────────────────────── */
 .hero {
@@ -154,6 +166,81 @@ ul {
   pointer-events: none;
 }
 
+/* ── HERO PHOTO ─────────────────────────────── */
+/* The photo sits on the right side of the hero, fading in from the right.
+   Replace src in index.html to use your own photo.
+   Tip: a portrait/headshot works best (aspect ratio ~2:3). */
+
+.hero__photo {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 42%;               /* How much of the hero the photo occupies */
+  pointer-events: none;
+  z-index: 0;
+
+  /* Fade-in from right on page load */
+  animation: photoReveal 1.2s var(--ease-out) 0.4s both;
+}
+
+.hero__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;  /* Focus on face — adjust if needed */
+  display: block;
+
+  /* Gradient mask: transparent on right edge, fades to invisible on left
+     so it blends naturally into the dark background */
+  -webkit-mask-image: linear-gradient(
+    to left,
+    rgba(0,0,0,0.92) 0%,
+    rgba(0,0,0,0.75) 30%,
+    rgba(0,0,0,0.2)  65%,
+    transparent      100%
+  );
+  mask-image: linear-gradient(
+    to left,
+    rgba(0,0,0,0.92) 0%,
+    rgba(0,0,0,0.75) 30%,
+    rgba(0,0,0,0.2)  65%,
+    transparent      100%
+  );
+
+  /* Also fade from top and bottom edges for a natural vignette */
+  -webkit-mask-composite: destination-in;
+  mask-composite: intersect;
+
+  /* Slight desaturation — looks professional, blends with dark bg */
+  filter: grayscale(20%) brightness(0.85) contrast(1.05);
+  opacity: 0.9;
+}
+
+/* Second mask layer for vertical fade (top/bottom vignette) */
+.hero__photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, var(--clr-bg) 0%, transparent 15%, transparent 80%, var(--clr-bg) 100%),
+    linear-gradient(to left, transparent 40%, var(--clr-bg) 100%);
+  pointer-events: none;
+}
+
+@keyframes photoReveal {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+    filter: blur(0);
+  }
+}
+
 .hero__grid {
   max-width: var(--max-width);
   margin: 0 auto;
@@ -162,7 +249,7 @@ ul {
   display: grid;
   gap: var(--space-xl);
   position: relative;
-  z-index: 1;
+  z-index: 2;            /* Sits above the photo layer */
 }
 
 /* Small label top-left */
@@ -259,6 +346,7 @@ ul {
   font-size: var(--fs-xs);
   color: var(--clr-dim);
   letter-spacing: 0.1em;
+  z-index: 2;
   animation: float 3s ease-in-out infinite, fadeSlideDown 1s var(--ease-out) 1s both;
 }
 
@@ -702,6 +790,11 @@ ul {
   :root {
     --space-2xl: 4rem;
     --space-xl:  2.5rem;
+  }
+
+  /* Hide the photo on small screens — text needs full width */
+  .hero__photo {
+    display: none;
   }
 
   .hero__grid {
