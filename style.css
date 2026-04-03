@@ -51,7 +51,7 @@
 
   /* Animation */
   --ease-out:      cubic-bezier(0.16, 1, 0.3, 1);
-  --duration:      1.6s;
+  --duration:      5s;
 }
 
 /* ── RESET & BASE ───────────────────────────── */
